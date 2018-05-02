@@ -1,84 +1,204 @@
 package com.spartancheung.ballandplate;
 
-import android.os.Bundle;
+import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        ThirdOverview.BleString, ThirdGraph.BlePosVal{
+
+    private final static String LOG_TAG = "MainActivity";
+    private BluetoothLeService mBleService;
+    private boolean bound_status = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BluetoothLeService.bleBinder mBinder = (BluetoothLeService.bleBinder) service;
+            mBleService = mBinder.getBle();
+            bound_status = true;
+            Log.v(LOG_TAG,"mBleService will not be a nullpointer");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bound_status = false;
+        }
+    };
+
+
+    public void settingBle(View view){
+        Intent bleGo = new Intent(this,BluetoothSetting.class);
+        startActivity(bleGo);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
 
-        //SectionPager myPagerAdapter = new SectionPager(getSupportFragmentManager());
-        //ViewPager viewPager = (ViewPager) findViewById(R.id.viewpage);
-        //viewPager.setAdapter(myPagerAdapter);
+        SectionPager sectionPager = new SectionPager(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.viewpager);
+        viewPager.setAdapter(sectionPager);
+        TabLayout tab = findViewById(R.id.mytab);
+        tab.setupWithViewPager(viewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        Intent intent = new Intent(this,BluetoothLeService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        Log.v(LOG_TAG,"CREATED");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        askAllPermission();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final Handler checkConnection = new Handler();
+        checkConnection.post(new Runnable() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void run() {
+                FloatingActionButton mFab = findViewById(R.id.mFab);
+                if(mBleService == null){
+                    Log.v(LOG_TAG,"Your service is not available");
+                } else {
+                    if( mBleService.mConnectionState==1 ){
+                        mFab.setBackgroundTintList(getResources().getColorStateList(R.color.ble_blue));
+                        mFab.setImageResource(R.drawable.ic_bluetooth_connected_white_24dp);
+                        mFab.setSize(FloatingActionButton.SIZE_MINI);
+                    } else {
+                        mFab.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                        mFab.setImageResource(R.drawable.ic_bluetooth_disabled_white_24dp);
+                        mFab.setSize(FloatingActionButton.SIZE_NORMAL);
+                    }
+                }
+                checkConnection.postDelayed(this,5000);
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.thanks_to:
+                Intent intent = new Intent(this, ThanksTo.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
-    public class SectionPager extends FragmentPagerAdapter {
+    public class SectionPager extends FragmentPagerAdapter{
         private SectionPager (FragmentManager fm){
             super(fm);
         }
 
-        public int getCount() {
+        public int getCount(){
             return 3;
         }
 
-        @Override
-        public Fragment getItem(int position) {
-            switch(position) {
+        public Fragment getItem(int positon){
+            switch(positon){
                 case 0:
-                    return new MainFragment();
+                    return new SecondOverview();
                 case 1:
-                    return new ControlCenter();
+                    return new SecondControl();
                 case 2:
-                    return new GraphFragment();
+                    return new SecondGraph();
             }
             return null;
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch(position){
+                case 0:
+                    return getResources().getString(R.string.overview);
+                case 1:
+                    return getResources().getString(R.string.control_center);
+                case 2:
+                    return getResources().getString(R.string.graphy_center);
+            }
+            return super.getPageTitle(position);
+        }
+    }
+
+
+    public void askAllPermission (){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1111);
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.BLUETOOTH},1112);
+        }
+    }
+
+    @Override
+    public String readString() {
+        if (mBleService != null && mBleService.mConnectionState == 1) {
+            return mBleService.bleNotifyVal;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public int readVal() {
+        if(mBleService != null && mBleService.mConnectionState == 1 &&
+                mBleService.bleNotifyVal != null){
+            String valStr = mBleService.bleNotifyVal;
+            //Log.v(LOG_TAG,valStr);
+            int indexHead = valStr.indexOf("$");
+            int indexEnd = valStr.indexOf("#");
+            return Integer.parseInt(valStr.substring(indexHead+4,indexEnd));
+        }
+        return 0;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(bound_status) {
+            unbindService(mConnection);
+            bound_status = false;
         }
     }
 }

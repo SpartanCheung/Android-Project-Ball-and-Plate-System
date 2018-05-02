@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".ThirdGraph">
+
+    <!-- TODO: Update blank fragment layout -->
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/xDirectionPlot"
+        style="@style/APDefacto.Light"
+        android:layout_margin="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        ap:title="@string/graph_xDir_title"
+        ap:domainTitle="@string/graph_xx_label"
+        ap:rangeTitle="@string/graph_xy_label"
+        ap:renderMode="use_main_thread"
+        ap:titleTextColor="@color/ble_blue"
+        ap:titleTextSize="14sp"
+        />
+
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/yDirectionPlot"
+        style="@style/APDefacto.Light"
+        android:layout_margin="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        ap:title="@string/graph_yDir_title"
+        ap:domainTitle="@string/graph_yx_label"
+        ap:rangeTitle="@string/graph_yy_label"
+        ap:renderMode="use_main_thread"
+        ap:titleTextColor="@color/ble_blue"
+        ap:titleTextSize="14sp"/>
+
+</LinearLayout>

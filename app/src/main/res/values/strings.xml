@@ -1,7 +1,61 @@
 <resources>
-    <string name="app_name">板球系统</string>
-    <string name="bluetooth_page">蓝牙中心</string>
-    <string name="action_settings">设置</string>
+    <string name="app_name">球板系统</string>
+    <string name="bluetooth_center">蓝牙中心</string>
+    <string name="thanks_to">致谢</string>
+
+
+    <string name="overview">概览</string>
+    <string name="control_center">控制中心</string>
+    <string name="graphy_center">示波器</string>
+
+
+    <!-- ble setting rsx -->
+    <string name="ble_switch">蓝牙开关</string>
+    <string name="ble_startsearching">开始搜寻</string>
+    <string name="ble_on">开启</string>
+    <string name="ble_off">关闭</string>
+    <string name="ble_name">蓝牙名称</string>
+    <string name="ble_mac">蓝牙MAC地址</string>
+    <string name="ble_service">蓝牙服务</string>
+    <string name="ble_characteristic">特征字</string>
+    <string name="ble_connect">连接</string>
+    <string name="ble_disconnect">断开连接</string>
+    <!-- ble status information -->
+    <string name="ble_status_on">蓝牙开启</string>
+    <string name="ble_status_search_done">蓝牙设备搜寻完毕</string>
+    <string name="ble_status_connected">蓝牙已连接！</string>
+    <string name="ble_status_timeout">操作超时！请重试！</string>
+
+    <string name="ble_activity_open">欢迎！开始设置蓝牙设备吧！</string>
+    <string name="ble_not_supported">您的设备不支持蓝牙4.0！无法使用此APP :(</string>
+    <string name="ble_supported">您的设备支持蓝牙4.0 :)</string>
+    <string name="ble_enabled">蓝牙设备已开启</string>
+    <string name="ble_enabled_fail">蓝牙设备已开启</string>
+    <string name="ble_disabled">蓝牙设备已关闭</string>
+    <string name="ble_scanning">正在搜寻附近的低功耗蓝牙设备，请等待约5秒...</string>
+    <string name="ble_device_not_found">搜寻结束，未搜寻到任何有名称的设备，请重试...</string>
+    <string name="ble_device_found">搜寻结束，搜寻到的设备数为：</string>
+    <string name="ble_name_selected">您选择的蓝牙设备名称为：</string>
+    <string name="ble_addr_selected">您选择的蓝牙设备地址为：</string>
+
+    <string name="ble_connecting">正在尝试连接到指定设备</string>
+    <string name="ble_connected">已连接到指定的蓝牙设备</string>
+    <string name="ble_disconnected">蓝牙连接已经断开</string>
+    <string-array name="ble_name_list">
+        <item>aaaa</item>
+        <item>bbbb</item>
+    </string-array>
+
+
+
+    <!--Strings for graph fragment-->
+    <string name="graph_xDir_title">X方向</string>
+    <string name="graph_yDir_title">Y方向</string>
+    <string name="graph_xx_label">时间</string>
+    <string name="graph_xy_label">坐标值</string>
+    <string name="graph_yx_label">时间</string>
+    <string name="graph_yy_label">坐标值</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

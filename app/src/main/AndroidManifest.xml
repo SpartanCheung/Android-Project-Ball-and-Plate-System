@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.spartancheung.ballandplate">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+
+    <!-- App only runs on devices supporting BLE -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,16 +18,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ThanksTo"
+            android:label="@string/thanks_to"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".BluetoothSetting"
+            android:label="@string/bluetooth_center"
+            android:parentActivityName=".MainActivity"/>
+
+        <service
+            android:name=".BluetoothLeService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>
