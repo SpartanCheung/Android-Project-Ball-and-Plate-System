@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity implements
         ThirdOverview.BleString, ThirdGraph.BlePosVal{
+    private int[] bnpGoalPos = new int[2];
 
     private final static String LOG_TAG = "MainActivity";
     private BluetoothLeService mBleService;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
                         mFab.setSize(FloatingActionButton.SIZE_NORMAL);
                     }
                 }
-                checkConnection.postDelayed(this,5000);
+                checkConnection.postDelayed(this,10000);
             }
         });
     }
@@ -124,6 +125,10 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private SecondOverview secondOverview = null;
+    private SecondControl secondControl = null;
+    private SecondGraph secondGraph = null;
+
     public class SectionPager extends FragmentPagerAdapter{
         private SectionPager (FragmentManager fm){
             super(fm);
@@ -136,11 +141,20 @@ public class MainActivity extends AppCompatActivity implements
         public Fragment getItem(int positon){
             switch(positon){
                 case 0:
-                    return new SecondOverview();
+                    if(secondOverview == null){
+                        secondOverview = new SecondOverview();
+                    }
+                    return secondOverview;
                 case 1:
-                    return new SecondControl();
+                    if(secondControl == null){
+                        secondControl = new SecondControl();
+                    }
+                    return secondControl;
                 case 2:
-                    return new SecondGraph();
+                    if(secondGraph == null){
+                        secondGraph = new SecondGraph();
+                    }
+                    return secondGraph;
             }
             return null;
         }
@@ -180,22 +194,38 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public int readVal() {
+    public int[] readVal() {
+        int [] result = new int[4];
         if(mBleService != null && mBleService.mConnectionState == 1 &&
                 mBleService.bleNotifyVal != null){
             String valStr = mBleService.bleNotifyVal;
             //Log.v(LOG_TAG,valStr);
-            int indexHead = valStr.indexOf("$");
+            //int indexHead = valStr.indexOf("$");
+            int indexXHead = valStr.indexOf("X");
+            int indexXEnd = valStr.indexOf(",");
+            int indexYHead = valStr.indexOf("Y");
             int indexEnd = valStr.indexOf("#");
-            return Integer.parseInt(valStr.substring(indexHead+4,indexEnd));
+            result[0]=Integer.parseInt(valStr.substring(indexXHead+1,indexXEnd));
+            result[1]=Integer.parseInt(valStr.substring(indexYHead+1,indexEnd));
+            bnpGoalPos[0] = 160;
+            bnpGoalPos[1] = 100;
+            result[2] = bnpGoalPos[0];
+            result[3] = bnpGoalPos[1];
+            return result;
         }
-        return 0;
+        bnpGoalPos[0] = 160;
+        bnpGoalPos[1] = 100;
+        result[0]=0;
+        result[1]=0;
+        result[2] = bnpGoalPos[0];
+        result[3] = bnpGoalPos[1];
+
+        return result;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         if(bound_status) {
             unbindService(mConnection);
             bound_status = false;
